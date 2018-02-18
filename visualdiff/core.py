@@ -41,18 +41,24 @@ class VisualDiff:
     def image_compare(a: Path, b: Path):
         with Image.open(a) as imga:
             with Image.open(b) as imgb:
+                # remove the alpha layer
+                imga, imgb = map(lambda img: img.convert('RGB'), [imga, imgb])
                 diff = ImageChops.difference(imga, imgb)
                 box = diff.getbbox()
                 return box
 
-    async def compare(self, url, width=800, height=600):
-        master = get_master_path(url, width=width, height=height)
+    async def compare(self, url, width=800, height=600,
+                      master_path=None):
+        if master_path is None:
+            master = get_master_path(url, width=width, height=height)
+        else:
+            master = Path(master_path)
         screenshot = await self.get_screenshot(url, width, height)
         try:
             result = None
             if master.exists():
                 logger.debug(f"Comparing {master} with {screenshot}")
-                self.image_compare(master, screenshot)
+                result = self.image_compare(master, screenshot)
                 logger.info(result)
             else:
                 logger.info("Master file missing, using the current status.")

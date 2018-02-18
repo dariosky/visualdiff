@@ -24,12 +24,17 @@ class VisualDiff:
         super().__init__()
         self.browser = None
 
-    async def get_screenshot(self, url: str, width: int, height: int) -> Path:
+    async def get_screenshot(self, url: str, **kwargs) -> Path:
         if self.browser is None:
             self.browser = launch()
         page = await self.browser.newPage()
 
-        await page.setViewport(dict(width=width, height=height))
+        change_viewport = {k: v for k, v in kwargs.items()
+                           if k in ("width", "height")}
+        if change_viewport:
+            await page.setViewport(change_viewport)
+        if 'emulate' in kwargs:
+            await page.emulate(kwargs['emulate'])
         await page.goto(url)
         temp_file = tempfile.NamedTemporaryFile(prefix='visualdiff_',
                                                 suffix='.png', delete=False)
@@ -47,13 +52,13 @@ class VisualDiff:
                 box = diff.getbbox()
                 return box
 
-    async def compare(self, url, width=800, height=600,
-                      master_path=None):
+    async def compare(self, url, master_path=None,
+                      **kwargs):
         if master_path is None:
-            master = get_master_path(url, width=width, height=height)
+            master = get_master_path(url)
         else:
             master = Path(master_path)
-        screenshot = await self.get_screenshot(url, width, height)
+        screenshot = await self.get_screenshot(url, **kwargs)
         try:
             result = None
             if master.exists():

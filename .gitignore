@@ -1,0 +1,5 @@
+*.py[oc]
+.pytest_cache
+
+/.idea
+

@@ -1,0 +1,2 @@
+pillow
+-e git+https://github.com/miyakogi/pyppeteer.git@dev

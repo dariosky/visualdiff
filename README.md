@@ -1,7 +1,7 @@
 Visual diff tests for Python
 ===
 
-###Automate chrome browser render diffs for website testing
+### Automate chrome browser render diffs for website testing
 
 Featuring Puppeteer, headless Chrome and  Python image diffing
 
@@ -30,3 +30,10 @@ import visualdiff as vd
 
 assert not vd.difference('https://example.com')
 ```
+
+## Credits:
+
+* It is a long time that I wanted a tool like this one,
+but thanks to [this article from Monica Dinculescu](https://meowni.ca/posts/2017-puppeteer-tests/)
+for finally convincing me.
+* Thanks to Mijakogi for [the outstanding work on Pyppeteer](https://github.com/miyakogi/pyppeteer/)

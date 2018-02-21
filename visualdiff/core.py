@@ -29,13 +29,15 @@ class VisualDiff:
             self.browser = launch()
         page = await self.browser.newPage()
 
-        change_viewport = {k: v for k, v in kwargs.items()
+        change_viewport = {k: kwargs.pop(k) for k, v in kwargs.items()
                            if k in ("width", "height")}
         if change_viewport:
             await page.setViewport(change_viewport)
-        if 'emulate' in kwargs:
-            await page.emulate(kwargs['emulate'])
-        await page.goto(url)
+        emulate = kwargs.pop('emulate', None)
+        if emulate:
+            await page.emulate(emulate)
+        options = kwargs
+        await page.goto(url, options)
         temp_file = tempfile.NamedTemporaryFile(prefix='visualdiff_',
                                                 suffix='.png', delete=False)
         await page.screenshot({'path': temp_file.name})

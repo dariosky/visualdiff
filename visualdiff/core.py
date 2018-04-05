@@ -24,10 +24,16 @@ class VisualDiff:
         super().__init__()
         self.browser = None
 
-    async def get_screenshot(self, url: str, **kwargs) -> Path:
+    async def get_screenshot(self, url: str,
+                             request_handler_func=None,
+                             **kwargs) -> Path:
         if self.browser is None:
-            self.browser = launch()
+            self.browser = await launch()
         page = await self.browser.newPage()
+
+        if request_handler_func:
+            await page.setRequestInterception(True)
+            page.on('request', request_handler_func)
 
         change_viewport = {k: kwargs.pop(k) for k, v in kwargs.items()
                            if k in ("width", "height")}

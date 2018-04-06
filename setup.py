@@ -22,7 +22,7 @@ dependency_links = [
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', ]
+test_requirements = ['pytest', ] + requirements + dependency_links
 
 version = visualdiff.__version__
 

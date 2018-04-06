@@ -4,6 +4,7 @@ import logging
 from visualdiff.core import VisualDiff
 
 logger = logging.getLogger("visualdiff.helper")
+__version__ = '0.2.0'
 
 
 class DiffHelper():

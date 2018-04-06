@@ -75,7 +75,8 @@ class VisualDiff:
                 logger.info(result)
             else:
                 logger.info("Master file missing, using the current status.")
-                master.parent.mkdir(parents=True, exist_ok=True)  # ensure folder exists
+                # ensure folder exists
+                master.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy(screenshot, master)
         except Exception:
             raise

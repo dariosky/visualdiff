@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 """The setup script."""
+from distutils.util import convert_path
 
 from setuptools import setup, find_packages
-
-import visualdiff
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -13,6 +12,16 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
+
+def get_version(path):
+    ver_path = convert_path(path)
+    main_ns = {}
+    with open(ver_path) as ver_file:
+        exec(ver_file.read(), main_ns)
+    return main_ns['__version__']
+
+
+version = get_version('visualdiff/version.py')
 requirements = ['pillow',
                 'pyppeteer', ]
 
@@ -22,9 +31,7 @@ dependency_links = [
 
 setup_requirements = ['pytest-runner', ]
 
-test_requirements = ['pytest', ] + requirements + dependency_links
-
-version = visualdiff.__version__
+test_requirements = ['pytest', ] + requirements
 
 setup(
     author="Dario Varotto",

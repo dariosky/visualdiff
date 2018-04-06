@@ -27,6 +27,14 @@ visualdiff.core module
     :undoc-members:
     :show-inheritance:
 
+visualdiff.version module
+-------------------------
+
+.. automodule:: visualdiff.version
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------

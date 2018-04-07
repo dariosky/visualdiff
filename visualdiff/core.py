@@ -23,12 +23,13 @@ class VisualDiff:
     def __init__(self) -> None:
         super().__init__()
         self.browser = None
+        self.browser_kwargs = {'args': ['--no-sandbox']} if 'TRAVIS' in os.environ else {}
 
     async def get_screenshot(self, url: str,
                              request_handler_func=None,
                              **kwargs) -> Path:
         if self.browser is None:
-            self.browser = await launch()
+            self.browser = await launch(**self.browser_kwargs)
         page = await self.browser.newPage()
 
         if request_handler_func:

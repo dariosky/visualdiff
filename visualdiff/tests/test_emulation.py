@@ -24,6 +24,5 @@ iphone_description = {
 class TestEmulation:
     def test_iphone6(self):
         assert not vd('http://example.com',
-                      master_path=here /
-                                  'visualdiff_masters/same_iphone5.png'
-                      , emulate=iphone_description)
+                      master_path=here / 'visualdiff_masters/same_iphone5.png',
+                      emulate=iphone_description)

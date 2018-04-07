@@ -8,4 +8,4 @@ python setup.py sdist
 # ** to install: **
 # pip install -e .
 
-#twine upload dist/*
+twine upload dist/*

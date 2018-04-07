@@ -35,7 +35,7 @@ class VisualDiff:
             await page.setRequestInterception(True)
             page.on('request', request_handler_func)
 
-        change_viewport = {k: kwargs.pop(k) for k, v in kwargs.items()
+        change_viewport = {k: kwargs.pop(k) for k in list(kwargs.keys())
                            if k in ("width", "height")}
         if change_viewport:
             await page.setViewport(change_viewport)

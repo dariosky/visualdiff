@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from visualdiff.caller_path import get_caller_path
+from visualdiff.paths import get_caller_path
 
 
 class TestCallerPath:

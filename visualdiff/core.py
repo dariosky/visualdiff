@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -8,25 +7,17 @@ from pathlib import Path
 from PIL import Image, ImageChops
 from pyppeteer.launcher import launch
 
-logger = logging.getLogger(__name__)
-
-
-def get_master_path(url: str, **kwargs) -> Path:
-    result = Path("visualdiff_masters")
-    safe_url = re.sub('[^0-9a-zA-Z]', '_', url)
-    result /= safe_url + ".png"
-    logger.debug(f"URL: {url} => {result}")
-    return result
+logger = logging.getLogger('visualdiff.core')
 
 
 class VisualDiff:
     def __init__(self) -> None:
         super().__init__()
         self.browser = None
-        if 'TRAVIS' in os.environ:
+        if 'CI' in os.environ:
             # when in Travis CI, go in no-sandbox mode
             #  see https://github.com/miyakogi/pyppeteer/issues/60
-            logger.warning("Travis mode, using no-sandbox")
+            logger.warning("Continuous integration mode, using no-sandbox")
             self.browser_kwargs = {'args': ['--no-sandbox']}
         else:
             self.browser_kwargs = {}
@@ -68,24 +59,26 @@ class VisualDiff:
                 box = diff.getbbox()
                 return box
 
-    async def compare(self, url, master_path=None,
+    async def compare(self, url, master_path: Path,
+                      master_should_exist=False,
                       **kwargs):
-        if master_path is None:
-            master = get_master_path(url)
-        else:
-            master = Path(master_path)
+        if not master_path.is_absolute():
+            raise Exception("Please provide an absolute master_path")
+
         screenshot = await self.get_screenshot(url, **kwargs)
         try:
             result = None
-            if master.exists():
-                logger.debug(f"Comparing {master} with {screenshot}")
-                result = self.image_compare(master, screenshot)
+            if master_path.exists():
+                logger.debug(f"Comparing {master_path} with {screenshot}")
+                result = self.image_compare(master_path, screenshot)
                 logger.info(result)
             else:
+                if master_should_exist:
+                    raise Exception("Missing master file: %s" % master_path)
                 logger.info("Master file missing, using the current status.")
                 # ensure folder exists
-                master.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy(screenshot, master)
+                master_path.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copy(screenshot, master_path)
         except Exception:
             raise
         finally:

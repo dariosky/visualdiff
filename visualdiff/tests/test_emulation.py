@@ -1,9 +1,4 @@
-import os
-from pathlib import Path
-
 from visualdiff import vd
-
-here = Path(os.path.abspath(os.path.dirname(__file__)))
 
 iphone_description = {
     'name': 'iPhone 5',
@@ -24,5 +19,6 @@ iphone_description = {
 class TestEmulation:
     def test_iphone6(self):
         assert not vd('http://example.com',
-                      master_path=here / 'visualdiff_masters/same_iphone5.png',
+                      master_path='visualdiff_masters/same_iphone5.png',
+                      master_should_exist=True,
                       emulate=iphone_description)

@@ -23,8 +23,13 @@ class VisualDiff:
     def __init__(self) -> None:
         super().__init__()
         self.browser = None
-        self.browser_kwargs = {'args': ['--no-sandbox']} if 'TRAVIS' in os.environ else {}
-        print("\n*** Browser launch args:", self.browser_kwargs)
+        if 'TRAVIS' in os.environ:
+            # when in Travis CI, go in no-sandbox mode
+            #  see https://github.com/miyakogi/pyppeteer/issues/60
+            logger.warning("Travis mode, using no-sandbox")
+            self.browser_kwargs = {'args': ['--no-sandbox']}
+        else:
+            self.browser_kwargs = {}
 
     async def get_screenshot(self, url: str,
                              request_handler_func=None,
@@ -48,7 +53,8 @@ class VisualDiff:
         await page.goto(url, options)
         temp_file = tempfile.NamedTemporaryFile(prefix='visualdiff_',
                                                 suffix='.png', delete=False)
-        await page.screenshot({'path': temp_file.name})
+        await page.screenshot({'path': temp_file.name,
+                               'type': 'png'})
         logger.debug(f"saved in {temp_file.name}")
         return Path(temp_file.name)
 

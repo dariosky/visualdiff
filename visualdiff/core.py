@@ -24,6 +24,7 @@ class VisualDiff:
         super().__init__()
         self.browser = None
         self.browser_kwargs = {'args': ['--no-sandbox']} if 'TRAVIS' in os.environ else {}
+        print("\n*** Browser launch args:", self.browser_kwargs)
 
     async def get_screenshot(self, url: str,
                              request_handler_func=None,

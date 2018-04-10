@@ -71,6 +71,12 @@ class VisualDiff:
             if master_path.exists():
                 logger.debug(f"Comparing {master_path} with {screenshot}")
                 result = self.image_compare(master_path, screenshot)
+                if result is not None:
+                    different_path = str(master_path) + "diff.png"
+                    shutil.copy(screenshot, different_path)
+                    logger.warning(
+                        "Copied different screeshot to %s" % different_path
+                    )
                 logger.info(result)
             else:
                 if master_should_exist:

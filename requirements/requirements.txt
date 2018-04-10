@@ -1,2 +1,2 @@
 pillow
--e git+https://github.com/miyakogi/pyppeteer.git@dev
+-e git+https://github.com/miyakogi/pyppeteer.git@dev#egg=pyppeteer

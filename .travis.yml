@@ -1,5 +1,22 @@
 language: python
 
+sudo: required
+
+before_install:
+- curl https://fonts.google.com/download\?family\=Open%20Sans --output ~/opensans.zip
+- sudo mkdir -p /usr/share/fonts/googlefonts && sudo unzip ~/opensans.zip -d /usr/share/fonts/googlefont
+- sudo chmod -R 666 /usr/share/fonts/googlefont
+- sudo fc-cache -fv
+
+addons:
+  apt:
+    packages:
+      - fonts-ipafont-gothic
+      - fonts-wqy-zenhei
+      - fonts-thai-tlwg
+      - fonts-kacst
+      - ttf-freefont
+
 python:
 - 3.6
 install: pip install -U tox-travis

@@ -4,8 +4,9 @@ sudo: required
 
 before_install:
 - curl https://fonts.google.com/download\?family\=Open%20Sans --output ~/opensans.zip
-- sudo mkdir -p /usr/share/fonts/googlefonts && sudo unzip ~/opensans.zip -d /usr/share/fonts/googlefont
-- sudo chmod -R 666 /usr/share/fonts/googlefont
+- sudo mkdir -p /usr/share/fonts/googlefonts && sudo unzip ~/opensans.zip -d /usr/share/fonts/googlefonts
+- sudo chmod 755 /usr/share/fonts/googlefonts
+- sudo chmod -R 644 /usr/share/fonts/googlefonts/*
 - sudo fc-cache -fv
 
 addons:

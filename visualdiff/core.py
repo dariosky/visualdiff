@@ -61,6 +61,7 @@ class VisualDiff:
 
     async def compare(self, url, master_path: Path,
                       master_should_exist=False,
+                      save_differences=False,
                       **kwargs):
         if not master_path.is_absolute():
             raise Exception("Please provide an absolute master_path")
@@ -71,7 +72,7 @@ class VisualDiff:
             if master_path.exists():
                 logger.debug(f"Comparing {master_path} with {screenshot}")
                 result = self.image_compare(master_path, screenshot)
-                if result is not None:
+                if result is not None and save_differences:
                     different_path = str(master_path) + "diff.png"
                     shutil.copy(screenshot, different_path)
                     logger.warning(

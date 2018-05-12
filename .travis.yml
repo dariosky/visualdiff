@@ -17,6 +17,7 @@ addons:
       - fonts-thai-tlwg
       - fonts-kacst
       - ttf-freefont
+      - msttcorefonts
 
 python:
 - 3.6

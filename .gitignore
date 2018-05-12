@@ -104,3 +104,5 @@ ENV/
 
 # IDE
 /.idea
+
+*.diff.png

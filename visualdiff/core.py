@@ -1,10 +1,11 @@
+import asyncio
 import logging
 import os
 import shutil
 import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageChops
+from PIL import Image, ImageChops, ImageDraw, ImageColor
 from pyppeteer.launcher import launch
 
 logger = logging.getLogger('visualdiff.core')
@@ -24,6 +25,7 @@ class VisualDiff:
 
     async def get_screenshot(self, url: str,
                              request_handler_func=None,
+                             sleep_delay=0,
                              **kwargs) -> Path:
         if self.browser is None:
             self.browser = await launch(**self.browser_kwargs)
@@ -42,6 +44,10 @@ class VisualDiff:
             await page.emulate(emulate)
         options = kwargs
         await page.goto(url, options)
+        # disable CSS animations
+        await page.addStyleTag(dict(content='*{transition: none !important}'))
+        await asyncio.sleep(sleep_delay)  # seconds delay for JS animations
+
         temp_file = tempfile.NamedTemporaryFile(prefix='visualdiff_',
                                                 suffix='.png', delete=False)
         await page.screenshot({'path': temp_file.name,
@@ -68,17 +74,13 @@ class VisualDiff:
 
         screenshot = await self.get_screenshot(url, **kwargs)
         try:
-            result = None
+            differences = None
             if master_path.exists():
                 logger.debug(f"Comparing {master_path} with {screenshot}")
-                result = self.image_compare(master_path, screenshot)
-                if result is not None and save_differences:
-                    different_path = str(master_path) + "diff.png"
-                    shutil.copy(screenshot, different_path)
-                    logger.warning(
-                        "Copied different screeshot to %s" % different_path
-                    )
-                logger.info(result)
+                differences = self.image_compare(master_path, screenshot)
+                if differences is not None and save_differences:
+                    self.save_diff(screenshot, differences, master_path)
+                logger.info(f"Differences: {differences}")
             else:
                 if master_should_exist:
                     raise Exception("Missing master file: %s" % master_path)
@@ -90,4 +92,22 @@ class VisualDiff:
             raise
         finally:
             os.unlink(str(screenshot))  # ensure that no temp files are left
-        return result
+        return differences
+
+    @staticmethod
+    def save_diff(screenshot, differences, master_path):
+        name, ext = os.path.splitext(master_path)
+        differences_path = name + ".diff" + ext
+        diffimg = Image.open(screenshot)
+        dr = ImageDraw.Draw(diffimg)
+        dr.rectangle(differences, outline=ImageColor.getrgb('red'))
+        diffimg.save(differences_path)
+
+        logger.warning(
+            "Copied screenshot with differences to %s" % differences_path
+        )
+
+    def __del__(self):
+        if self.browser:
+            self.browser.close()
+            self.browser = None

@@ -35,8 +35,8 @@ class TestVisualDifferences:
             else:
                 await request.continue_()
 
-        assert not vd('http://acid3.acidtests.org/reference.html',
+        assert not vd('http://httpbin.org/image/webp',
                       **self.common_options,
                       request_handler_func=intercept_request,
-                      master_path='visualdiff_masters/acid.png',
+                      master_path='visualdiff_masters/reference.png',
                       )

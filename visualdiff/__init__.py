@@ -18,6 +18,7 @@ class DiffHelper():
                  save_differences=False,
                  width=None, height=None,
                  emulate: dict = None,
+                 sleep_delay=0,
                  ):
         """
         A wrapper to easily automate diff-tests
@@ -42,6 +43,7 @@ class DiffHelper():
                             save_differences=save_differences,
                             width=width, height=height,
                             emulate=emulate,
+                            sleep_delay=sleep_delay,
                             )
         )
         return diff

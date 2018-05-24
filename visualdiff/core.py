@@ -122,6 +122,11 @@ class VisualDiff:
         await self.get_browser()
         page = await self.browser.newPage()
         for cookie in cookies:
-            await page.setCookie(
-                cookie
-            )
+            if cookie.get('value'):
+                await page.setCookie(
+                    cookie
+                )
+            else:
+                await page.deleteCookie(
+                    cookie
+                )

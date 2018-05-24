@@ -3,7 +3,7 @@ from visualdiff import vd
 
 class TestVisualDifferences:
     common_options = dict(
-        master_should_exist=True,
+        # master_should_exist=True,
         save_differences=True,
     )
 
@@ -39,4 +39,13 @@ class TestVisualDifferences:
                       **self.common_options,
                       request_handler_func=intercept_request,
                       master_path='visualdiff_masters/reference.png',
+                      )
+
+    def test_send_cookies(self):
+        assert not vd('http://httpbin.org/cookies',
+                      **self.common_options,
+                      cookies=[dict(name='cookie_is_set',
+                                    value='YES',
+                                    url='http://httpbin.org/')],
+                      master_path='visualdiff_masters/cookies.png',
                       )

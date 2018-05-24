@@ -23,23 +23,26 @@ class VisualDiff:
         else:
             self.browser_kwargs = {}
 
+    async def get_browser(self):
+        if self.browser is None:
+            self.browser = await launch(**self.browser_kwargs)
+
     async def get_screenshot(self, url: str,
                              request_handler_func=None,
                              sleep_delay=0,
+                             width=None, height=None,
+                             emulate=None,
                              **kwargs) -> Path:
-        if self.browser is None:
-            self.browser = await launch(**self.browser_kwargs)
+        await self.get_browser()
         page = await self.browser.newPage()
 
         if request_handler_func:
             await page.setRequestInterception(True)
             page.on('request', request_handler_func)
 
-        change_viewport = {k: kwargs.pop(k) for k in list(kwargs.keys())
-                           if k in ("width", "height")}
-        if change_viewport:
+        if width or height:
+            change_viewport = dict(width=width, height=height)
             await page.setViewport(change_viewport)
-        emulate = kwargs.pop('emulate', None)
         if emulate:
             await page.emulate(emulate)
         options = kwargs
@@ -68,10 +71,13 @@ class VisualDiff:
     async def compare(self, url, master_path: Path,
                       master_should_exist=False,
                       save_differences=False,
+                      cookies=None,
                       **kwargs):
         if not master_path.is_absolute():
             raise Exception("Please provide an absolute master_path")
 
+        if cookies:
+            await self.set_cookies(cookies)
         screenshot = await self.get_screenshot(url, **kwargs)
         try:
             differences = None
@@ -111,3 +117,11 @@ class VisualDiff:
         if self.browser:
             self.browser.close()
             self.browser = None
+
+    async def set_cookies(self, cookies):
+        await self.get_browser()
+        page = await self.browser.newPage()
+        for cookie in cookies:
+            await page.setCookie(
+                cookie
+            )

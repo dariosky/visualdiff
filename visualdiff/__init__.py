@@ -12,7 +12,13 @@ class DiffHelper():
         self.vd = VisualDiff()
 
     def __call__(self, url: str, master_path: Union[str, Path],
-                 **kwargs):
+                 request_handler_func=None,
+                 cookies=None,
+                 master_should_exist=False,
+                 save_differences=False,
+                 width=None, height=None,
+                 emulate: dict = None,
+                 ):
         """
         A wrapper to easily automate diff-tests
 
@@ -30,7 +36,13 @@ class DiffHelper():
         diff = loop.run_until_complete(
             self.vd.compare(url,
                             master_path=master_path,
-                            **kwargs)
+                            request_handler_func=request_handler_func,
+                            cookies=cookies,
+                            master_should_exist=master_should_exist,
+                            save_differences=save_differences,
+                            width=width, height=height,
+                            emulate=emulate,
+                            )
         )
         return diff
 
